@@ -10,6 +10,15 @@ namespace Craft.Sqlite;
 /// <param name="languageCode">言語コード</param>
 public class ItemRepository(IDbConnection connection, string languageCode) : IItemRepository
 {
+	#region Fields
+
+	/// <summary>
+	/// アイテムのコレクション
+	/// </summary>
+	private static readonly Dictionary<ItemId, Item> _cache = [];
+
+	#endregion
+
 	#region Methods
 
 	/// <summary>
@@ -20,6 +29,12 @@ public class ItemRepository(IDbConnection connection, string languageCode) : IIt
 	public Item Find(ItemId itemId)
 	{
 		Item result;
+
+		if (_cache.ContainsKey(itemId))
+		{
+			result = _cache[itemId];
+		}
+		else
 		{
 			const string sql = @"SELECT
 	  ite.item_id
@@ -44,6 +59,8 @@ WHERE
 			ItemName resItemName = new(record.ItemName);
 
 			result = new Item(resItemId, resItemName);
+
+			_cache.Add(result.ItemId, result);
 		}
 
 		return result;
