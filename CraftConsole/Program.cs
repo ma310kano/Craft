@@ -16,14 +16,16 @@ IServiceProvider serviceProvider;
 	}
 
 	services.AddSingleton<IItemQueryService, ItemQueryService>();
+	services.AddSingleton<IItemMatterCreationService, ItemMatterCreationService>();
 
 	serviceProvider = services.BuildServiceProvider();
 }
 
-IItemQueryService itemQueryService = serviceProvider.GetRequiredService<IItemQueryService>();
+IItemMatterCreationService itemMatterCreationService = serviceProvider.GetRequiredService<IItemMatterCreationService>();
 
 ItemId itemId = new("grass");
+Quantity quantity = new(1);
 
-Item item = itemQueryService.QuerySingle(itemId);
+ItemMatter itemMatter = itemMatterCreationService.Create(itemId, quantity);
 
-Console.WriteLine(item);
+Console.WriteLine(itemMatter);
