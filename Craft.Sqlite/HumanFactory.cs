@@ -1,11 +1,25 @@
-﻿namespace Craft;
+﻿using Craft.Sqlite;
+using Microsoft.Extensions.Configuration;
+
+namespace Craft;
 
 /// <summary>
 /// 人間のファクトリー
 /// </summary>
-public class HumanFactory : IHumanFactory
+/// <param name="configuration">設定</param>
+public class HumanFactory(IConfiguration configuration) : IHumanFactory
 {
 	#region Fields
+
+	/// <summary>
+	/// 接続文字列
+	/// </summary>
+	private readonly string _connectionString = configuration.GetConnectionString("Craft") ?? throw new InvalidOperationException("接続文字列を取得できません。");
+
+	/// <summary>
+	/// 言語コード
+	/// </summary>
+	private readonly string _languageCode = configuration.GetValue<string>("LanguageCode") ?? throw new InvalidOperationException("言語コードを取得できません。");
 
 	/// <summary>
 	/// 家族のファクトリー
@@ -27,8 +41,9 @@ public class HumanFactory : IHumanFactory
 		Human product;
 		{
 			HumanId humanId = HumanId.Create();
+			Inventory inventory = new(_connectionString, _languageCode);
 
-			product = new Human(humanId, firstName, family);
+			product = new Human(humanId, firstName, family, inventory);
 		}
 
 		return product;

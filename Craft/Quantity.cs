@@ -28,16 +28,46 @@ public record class Quantity
     /// </summary>
     public int Value { get; }
 
-    #endregion
+	#endregion
 
-    #region Methods
+	#region Operators
 
-    /// <summary>
-    /// 値を検証します。
-    /// </summary>
-    /// <param name="value">値</param>
-    /// <param name="message">メッセージ</param>
-    public static bool Validate(int value, out string message)
+	/// <summary>
+	/// 左側のオペランドから右側のオペランドを加算します。
+	/// </summary>
+	/// <param name="lhs">左側のオペランド</param>
+	/// <param name="rhs">右側のオペランド</param>
+	/// <returns>加算した数量を返します。</returns>
+	public static Quantity operator +(Quantity lhs, Quantity rhs)
+    {
+        Quantity addedQuantity = new(lhs.Value + rhs.Value);
+
+        return addedQuantity;
+    }
+
+	/// <summary>
+	/// 左側のオペランドから右側のオペランドを減算します。
+	/// </summary>
+	/// <param name="lhs">左側のオペランド</param>
+	/// <param name="rhs">右側のオペランド</param>
+	/// <returns>減算した数量を返します。</returns>
+	public static Quantity operator -(Quantity lhs, Quantity rhs)
+    {
+        Quantity subtractedQuantity = new(lhs.Value - rhs.Value);
+
+        return subtractedQuantity;
+    }
+
+	#endregion
+
+	#region Methods
+
+	/// <summary>
+	/// 値を検証します。
+	/// </summary>
+	/// <param name="value">値</param>
+	/// <param name="message">メッセージ</param>
+	public static bool Validate(int value, out string message)
     {
         const int minimumValue = 1;
         const int maximumValue = 999_999_999;

@@ -6,7 +6,8 @@
 /// <param name="humanId">人間ID</param>
 /// <param name="firstName">個人名</param>
 /// <param name="family">家族</param>
-public class Human(HumanId humanId, FirstName firstName, Family family) : IEquatable<Human>
+/// <param name="inventory">インベントリー</param>
+public class Human(HumanId humanId, FirstName firstName, Family family, IInventory inventory) : IEquatable<Human>
 {
     #region Properties
 
@@ -24,6 +25,11 @@ public class Human(HumanId humanId, FirstName firstName, Family family) : IEquat
     /// 家族を取得します。
     /// </summary>
     public Family Family { get; } = family;
+
+    /// <summary>
+    /// インベントリーを取得します。
+    /// </summary>
+    public IInventory Inventory { get; } = inventory;
 
     #endregion
 
@@ -107,7 +113,7 @@ public class Human(HumanId humanId, FirstName firstName, Family family) : IEquat
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family} }}";
+        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family}, {nameof(inventory)} = {Inventory} }}";
 
         return str;
     }

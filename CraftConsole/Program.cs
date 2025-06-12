@@ -1,5 +1,4 @@
 ﻿using Craft;
-using Craft.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,15 +14,14 @@ IServiceProvider serviceProvider;
 		services.AddSingleton(configuration);
 	}
 
-	services.AddSingleton<IItemQueryService, ItemQueryService>();
-	services.AddSingleton<IItemMatterCreationService, ItemMatterCreationService>();
+	services.AddSingleton<IHumanFactory, HumanFactory>();
 
 	serviceProvider = services.BuildServiceProvider();
 }
 
 Human human;
 {
-	HumanFactory humanFactory = new();
+	IHumanFactory humanFactory = serviceProvider.GetRequiredService<IHumanFactory>();
 
 	FirstName firstName = new("John");
 	FamilyName familyName = new("Smith");
@@ -31,15 +29,11 @@ Human human;
 	human = humanFactory.CreateWithFamily(firstName, familyName);
 }
 
+{
+	ItemId itemId = new("grass");
+	Quantity quantity = new(1);
+
+	human.Inventory.AddItem(itemId, quantity);
+}
+
 Console.WriteLine(human);
-
-Console.WriteLine();
-
-IItemMatterCreationService itemMatterCreationService = serviceProvider.GetRequiredService<IItemMatterCreationService>();
-
-ItemId itemId = new("grass");
-Quantity quantity = new(1);
-
-ItemMatter itemMatter = itemMatterCreationService.Create(itemId, quantity);
-
-Console.WriteLine(itemMatter);

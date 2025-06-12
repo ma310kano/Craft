@@ -23,7 +23,7 @@ public class ItemMatter(ItemMatterId itemMatterId, Item item, Quantity quantity)
     /// <summary>
     /// 数量を取得します。
     /// </summary>
-    public Quantity Quantity { get; } = quantity;
+    public Quantity Quantity { get; private set; } = quantity;
 
     #endregion
 
@@ -60,6 +60,15 @@ public class ItemMatter(ItemMatterId itemMatterId, Item item, Quantity quantity)
     #endregion
 
     #region Methods
+
+    /// <summary>
+    /// 数量を追加します。
+    /// </summary>
+    /// <param name="quantity">数量</param>
+    public void AddQuantity(Quantity quantity)
+    {
+        Quantity -= quantity;
+    }
 
     /// <summary>
     /// 指定されたオブジェクトが現在のオブジェクトと等しいかどうかを判断します。
