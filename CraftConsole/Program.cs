@@ -21,6 +21,20 @@ IServiceProvider serviceProvider;
 	serviceProvider = services.BuildServiceProvider();
 }
 
+Human human;
+{
+	HumanFactory humanFactory = new();
+
+	FirstName firstName = new("John");
+	FamilyName familyName = new("Smith");
+
+	human = humanFactory.CreateWithFamily(firstName, familyName);
+}
+
+Console.WriteLine(human);
+
+Console.WriteLine();
+
 IItemMatterCreationService itemMatterCreationService = serviceProvider.GetRequiredService<IItemMatterCreationService>();
 
 ItemId itemId = new("grass");
