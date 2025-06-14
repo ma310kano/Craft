@@ -68,17 +68,19 @@ public class Inventory(string connectionString, string languageCode) : IInventor
 	/// <param name="quantity">数量</param>
 	public ItemMatter RemoveItem(ItemId itemId, Quantity quantity)
 	{
-		ItemMatter itemMatter = _itemMatters.First(x => x.Item.ItemId == itemId);
+		ItemMatter result = _itemMatters.First(x => x.Item.ItemId == itemId);
 
-		ItemMatter result;
-		if (itemMatter.Quantity > quantity)
+		if (result.Quantity > quantity)
 		{
-			result = itemMatter.Take(quantity);
+			result = result.Take(quantity);
+		}
+		else if (result.Quantity == quantity)
+		{
+			_itemMatters.Remove(result);
 		}
 		else
 		{
-			_itemMatters.Remove(itemMatter);
-			result = itemMatter;
+			throw new InvalidOperationException($"{result.Item.ItemName}の数量が不足しています。。");
 		}
 
 		return result;
