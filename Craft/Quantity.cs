@@ -40,9 +40,9 @@ public record class Quantity
 	/// <returns>加算した数量を返します。</returns>
 	public static Quantity operator +(Quantity lhs, Quantity rhs)
     {
-        Quantity addedQuantity = new(lhs.Value + rhs.Value);
+        Quantity result = new(lhs.Value + rhs.Value);
 
-        return addedQuantity;
+        return result;
     }
 
 	/// <summary>
@@ -53,9 +53,9 @@ public record class Quantity
 	/// <returns>減算した数量を返します。</returns>
 	public static Quantity operator -(Quantity lhs, Quantity rhs)
     {
-        Quantity subtractedQuantity = new(lhs.Value - rhs.Value);
+        Quantity result = new(lhs.Value - rhs.Value);
 
-        return subtractedQuantity;
+        return result;
     }
 
     /// <summary>
