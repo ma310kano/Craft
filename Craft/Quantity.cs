@@ -58,6 +58,32 @@ public record class Quantity
         return subtractedQuantity;
     }
 
+    /// <summary>
+    /// 左側のオペランドが右側のオペランドより小さいか判定します。
+    /// </summary>
+    /// <param name="lhs">左側のオペランド</param>
+    /// <param name="rhs">右側のオペランド</param>
+    /// <returns>小さい場合は、<c>true</c>。それ以外の場合は、<c>false</c>。</returns>
+    public static bool operator <(Quantity lhs, Quantity rhs)
+    {
+        bool result = lhs.Value < rhs.Value;
+
+        return result;
+    }
+
+	/// <summary>
+	/// 左側のオペランドが右側のオペランドより大きいか判定します。
+	/// </summary>
+	/// <param name="lhs">左側のオペランド</param>
+	/// <param name="rhs">右側のオペランド</param>
+	/// <returns>大きい場合は、<c>true</c>。それ以外の場合は、<c>false</c>。</returns>
+	public static bool operator >(Quantity lhs, Quantity rhs)
+	{
+		bool result = lhs.Value > rhs.Value;
+
+		return result;
+	}
+
 	#endregion
 
 	#region Methods

@@ -111,6 +111,25 @@ public class ItemMatter(ItemMatterId itemMatterId, Item item, Quantity quantity)
     }
 
     /// <summary>
+    /// アイテム物質を取り出す。
+    /// </summary>
+    /// <param name="quantity">数量</param>
+    /// <returns>取り出したアイテム物質を返します。</returns>
+    public ItemMatter Take(Quantity quantity)
+    {
+        Quantity -= quantity;
+
+        ItemMatter result;
+        {
+            ItemMatterId itemMatterId = ItemMatterId.Create();
+
+            result = new ItemMatter(itemMatterId, Item, quantity);
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// 現在のオブジェクトを表す文字列を返します。
     /// </summary>
     /// <returns>現在のオブジェクトを表す文字列。</returns>

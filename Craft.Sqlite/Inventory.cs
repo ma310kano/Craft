@@ -60,6 +60,20 @@ public class Inventory(string connectionString, string languageCode) : IInventor
 	}
 
 	/// <summary>
+	/// アイテムを除去します。
+	/// </summary>
+	/// <param name="itemId">アイテムID</param>
+	/// <param name="quantity">数量</param>
+	public ItemMatter RemoveItem(ItemId itemId, Quantity quantity)
+	{
+		ItemMatter itemMatter = _itemMatters.First(x => x.Item.ItemId == itemId);
+
+		ItemMatter result = itemMatter.Take(quantity);
+
+		return result;
+	}
+
+	/// <summary>
 	/// 現在のオブジェクトを表す文字列を返します。
 	/// </summary>
 	/// <returns>現在のオブジェクトを表す文字列。</returns>

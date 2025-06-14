@@ -1,41 +1,23 @@
 ﻿namespace Craft;
 
 /// <summary>
-/// 人間
+/// レシピ素材
 /// </summary>
-/// <param name="humanId">人間ID</param>
-/// <param name="firstName">個人名</param>
-/// <param name="family">家族</param>
-/// <param name="itemRecipes">アイテムレシピのコレクション</param>
-/// <param name="inventory">インベントリー</param>
-public class Human(HumanId humanId, FirstName firstName, Family family, ICollection<ItemRecipe> itemRecipes, IInventory inventory) : IEquatable<Human>
+/// <param name="item">アイテム</param>
+/// <param name="quantity">数量</param>
+public class RecipeIngredient(Item item, Quantity quantity) : IEquatable<RecipeIngredient>
 {
     #region Properties
 
     /// <summary>
-    /// 人間IDを取得します。
+    /// アイテムを取得します。
     /// </summary>
-    public HumanId HumanId { get; } = humanId;
+    public Item Item { get; } = item;
 
     /// <summary>
-    /// 個人名を取得します。
+    /// 数量を取得します。
     /// </summary>
-    public FirstName FirstName { get; } = firstName;
-
-    /// <summary>
-    /// 家族を取得します。
-    /// </summary>
-    public Family Family { get; } = family;
-
-    /// <summary>
-    /// アイテムレシピのコレクションを取得します。
-    /// </summary>
-    public ICollection<ItemRecipe> ItemRecipes { get; } = itemRecipes;
-
-    /// <summary>
-    /// インベントリーを取得します。
-    /// </summary>
-    public IInventory Inventory { get; } = inventory;
+    public Quantity Quantity { get; } = quantity;
 
     #endregion
 
@@ -47,7 +29,7 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     /// <param name="lhs">左辺</param>
     /// <param name="rhs">右辺</param>
     /// <returns>オペランドが等しい場合は、 <c>true</c>。それ以外の場合は、 <c>false</c>。</returns>
-    public static bool operator ==(Human lhs, Human rhs)
+    public static bool operator ==(RecipeIngredient lhs, RecipeIngredient rhs)
     {
         if (lhs is null) return rhs is null;
 
@@ -62,7 +44,7 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     /// <param name="lhs">左辺</param>
     /// <param name="rhs">右辺</param>
     /// <returns>オペランドが等しくない場合は、 <c>true</c>。それ以外の場合は、 <c>false</c>。</returns>
-    public static bool operator !=(Human lhs, Human rhs)
+    public static bool operator !=(RecipeIngredient lhs, RecipeIngredient rhs)
     {
         bool result = !(lhs == rhs);
 
@@ -82,7 +64,7 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     {
         bool result = obj switch
         {
-            Human other => Equals(other),
+            RecipeIngredient other => Equals(other),
             _ => base.Equals(obj),
         };
 
@@ -93,11 +75,11 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     /// </summary>
     /// <param name="other">このオブジェクトと比較するオブジェクト。</param>
     /// <returns>現在のオブジェクトが <c>other</c> パラメーターと等しい場合は <c>true</c>、それ以外の場合は <c>false</c> です。</returns>
-    public bool Equals(Human? other)
+    public bool Equals(RecipeIngredient? other)
     {
         if (other is null) return false;
 
-        bool result = HumanId == other.HumanId;
+        bool result = Item == other.Item && Quantity == other.Quantity;
 
         return result;
     }
@@ -108,25 +90,9 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     /// <returns>現在のオブジェクトのハッシュ コード。</returns>
     public override int GetHashCode()
     {
-        int result = HashCode.Combine(HumanId);
+        int result = HashCode.Combine(Item);
 
         return result;
-    }
-
-    /// <summary>
-    /// アイテムを作成します。
-    /// </summary>
-    /// <param name="itemRecipeId">アイテムレシピID</param>
-    public void MakeItem(ItemRecipeId itemRecipeId)
-    {
-        ItemRecipe itemRecipe = ItemRecipes.Single(x => x.ItemRecipeId == itemRecipeId);
-
-        foreach (RecipeIngredient ingredient in itemRecipe.Ingredients)
-        {
-            Inventory.RemoveItem(ingredient.Item.ItemId, ingredient.Quantity);
-        }
-
-        Inventory.AddItem(itemRecipe.Item.ItemId, itemRecipe.Quantity);
     }
 
     /// <summary>
@@ -135,7 +101,7 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family}, {nameof(ItemRecipes)} = {ItemRecipes}, {nameof(inventory)} = {Inventory} }}";
+        string str = $"{nameof(RecipeIngredient)} {{ {nameof(Item)} = {Item}, {nameof(Quantity)} = {Quantity} }}";
 
         return str;
     }

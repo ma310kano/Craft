@@ -41,9 +41,10 @@ public class HumanFactory(IConfiguration configuration) : IHumanFactory
 		Human product;
 		{
 			HumanId humanId = HumanId.Create();
+			List<ItemRecipe> itemRecipes = [];
 			Inventory inventory = new(_connectionString, _languageCode);
 
-			product = new Human(humanId, firstName, family, inventory);
+			product = new Human(humanId, firstName, family, itemRecipes, inventory);
 		}
 
 		return product;
