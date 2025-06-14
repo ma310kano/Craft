@@ -6,6 +6,8 @@ namespace Craft.Sqlite;
 /// <summary>
 /// インベントリー
 /// </summary>
+/// <param name="connectionString">接続文字列</param>
+/// <param name="languageCode">言語コード</param>
 public class Inventory(string connectionString, string languageCode) : IInventory
 {
 	#region Fields
@@ -68,7 +70,16 @@ public class Inventory(string connectionString, string languageCode) : IInventor
 	{
 		ItemMatter itemMatter = _itemMatters.First(x => x.Item.ItemId == itemId);
 
-		ItemMatter result = itemMatter.Take(quantity);
+		ItemMatter result;
+		if (itemMatter.Quantity > quantity)
+		{
+			result = itemMatter.Take(quantity);
+		}
+		else
+		{
+			_itemMatters.Remove(itemMatter);
+			result = itemMatter;
+		}
 
 		return result;
 	}
