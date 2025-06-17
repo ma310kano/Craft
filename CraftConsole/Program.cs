@@ -15,7 +15,7 @@ IServiceProvider serviceProvider;
 		services.AddSingleton(configuration);
 	}
 
-	services.AddSingleton<IHumanFactory, HumanFactory>();
+	services.AddSingleton<IHumanCreationService, HumanCreationService>();
 	services.AddSingleton<IItemRecipeQueryService, ItemRecipeQueryService>();
 
 	serviceProvider = services.BuildServiceProvider();
@@ -23,12 +23,12 @@ IServiceProvider serviceProvider;
 
 Human human;
 {
-	IHumanFactory humanFactory = serviceProvider.GetRequiredService<IHumanFactory>();
+	IHumanCreationService humanCreationService = serviceProvider.GetRequiredService<IHumanCreationService>();
 
 	FirstName firstName = new("John");
 	FamilyName familyName = new("Smith");
 
-	human = humanFactory.CreateWithFamily(firstName, familyName);
+	human = humanCreationService.CreateWithFamily(firstName, familyName);
 }
 
 // Add item recipe

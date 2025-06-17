@@ -1,9 +1,9 @@
 ﻿namespace Craft;
 
 /// <summary>
-/// 人間のファクトリー
+/// 人間の作成サービス
 /// </summary>
-public interface IHumanFactory
+public interface IHumanCreationService
 {
 	#region Methods
 

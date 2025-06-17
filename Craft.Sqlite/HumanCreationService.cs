@@ -1,13 +1,12 @@
-﻿using Craft.Sqlite;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
-namespace Craft;
+namespace Craft.Sqlite;
 
 /// <summary>
-/// 人間のファクトリー
+/// 人間の作成サービス
 /// </summary>
 /// <param name="configuration">設定</param>
-public class HumanFactory(IConfiguration configuration) : IHumanFactory
+public class HumanCreationService(IConfiguration configuration) : IHumanCreationService
 {
 	#region Fields
 
