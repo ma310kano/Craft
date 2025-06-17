@@ -15,11 +15,24 @@ IServiceProvider serviceProvider;
 		services.AddSingleton(configuration);
 	}
 
+	services.AddSingleton<IAreaQueryService, AreaQueryService>();
 	services.AddSingleton<IHumanCreationService, HumanCreationService>();
 	services.AddSingleton<IItemRecipeQueryService, ItemRecipeQueryService>();
 
 	serviceProvider = services.BuildServiceProvider();
 }
+
+Area area;
+{
+	IAreaQueryService areaQueryService = serviceProvider.GetRequiredService<IAreaQueryService>();
+
+	AreaId areaId = new("grassland");
+
+	area = areaQueryService.QuerySingle(areaId);
+}
+
+Console.WriteLine(area);
+Console.WriteLine();
 
 Human human;
 {
