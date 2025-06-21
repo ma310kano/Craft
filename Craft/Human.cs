@@ -135,7 +135,7 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family}, {nameof(ItemRecipes)} = {ItemRecipes}, {nameof(inventory)} = {Inventory} }}";
+        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family}, {nameof(ItemRecipes)} = {ItemRecipes}, {nameof(Inventory)} = {Inventory} }}";
 
         return str;
     }
