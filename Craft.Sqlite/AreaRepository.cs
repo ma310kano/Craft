@@ -94,7 +94,9 @@ WHERE
 				}
 			}
 
-			result = new Area(resAreaId, resAreaName, items);
+			List<Human> humans = [];
+
+			result = new Area(resAreaId, resAreaName, items, humans);
 
 			_areas.Add(result.AreaId, result);
 		}

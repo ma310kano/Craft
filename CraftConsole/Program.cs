@@ -44,6 +44,8 @@ Human human;
 	human = humanCreationService.CreateWithFamily(firstName, familyName);
 }
 
+area.AddHuman(human);
+
 // Add item recipe
 ItemRecipeId itemRecipeId = new("fiber-01");
 {
@@ -59,7 +61,7 @@ ItemRecipeId itemRecipeId = new("fiber-01");
 	ItemId itemId = new("grass");
 	Quantity quantity = new(1);
 
-	human.Inventory.AddItem(itemId, quantity);
+	human.PickUpItem(itemId, quantity);
 }
 
 human.MakeItem(itemRecipeId);

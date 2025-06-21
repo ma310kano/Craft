@@ -6,14 +6,24 @@
 /// <param name="areaId">エリアID</param>
 /// <param name="areaName">エリア名</param>
 /// <param name="items">アイテムのコレクション</param>
-public class Area(AreaId areaId, AreaName areaName, IReadOnlyCollection<Item> items) : IEquatable<Area>
+/// <param name="humans">人間のコレクション</param>
+public class Area(AreaId areaId, AreaName areaName, IReadOnlyCollection<Item> items, IReadOnlyCollection<Human> humans) : IEquatable<Area>
 {
-    #region Properties
+    #region Fields
 
     /// <summary>
-    /// エリアIDを取得します。
+    /// 人間のコレクション
     /// </summary>
-    public AreaId AreaId { get; } = areaId;
+    private readonly List<Human> _humans = [.. humans];
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// エリアIDを取得します。
+	/// </summary>
+	public AreaId AreaId { get; } = areaId;
 
     /// <summary>
     /// エリア名を取得します。
@@ -24,6 +34,11 @@ public class Area(AreaId areaId, AreaName areaName, IReadOnlyCollection<Item> it
     /// アイテムのコレクションを取得します。
     /// </summary>
     public IReadOnlyCollection<Item> Items { get; } = items;
+
+    /// <summary>
+    /// 人間のコレクションを取得します。
+    /// </summary>
+    public IReadOnlyCollection<Human> Humans => _humans;
 
     #endregion
 
@@ -62,11 +77,56 @@ public class Area(AreaId areaId, AreaName areaName, IReadOnlyCollection<Item> it
     #region Methods
 
     /// <summary>
-    /// 指定されたオブジェクトが現在のオブジェクトと等しいかどうかを判断します。
+    /// 人間を追加します。
     /// </summary>
-    /// <param name="obj">現在のオブジェクトと比較するオブジェクト。</param>
-    /// <returns>指定したオブジェクトが現在のオブジェクトと等しい場合は <c>true</c>。それ以外の場合は <c>false</c>。</returns>
-    public override bool Equals(object? obj)
+    /// <param name="human">人間</param>
+    public void AddHuman(Human human)
+    {
+		human.ItemPickedUp += Human_ItemPickedUp;
+
+        _humans.Add(human);
+    }
+
+	/// <summary>
+	/// アイテム物質を作成します。
+	/// </summary>
+	/// <param name="itemId">アイテムID</param>
+	/// <param name="quantity">数量</param>
+	/// <returns>作成したアイテム物質を返します。</returns>
+	private ItemMatter CreateItemMatter(ItemId itemId, Quantity quantity)
+    {
+        ItemMatter product;
+        {
+            ItemMatterId itemMatterId = ItemMatterId.Create();
+            Item item = Items.Single(x => x.ItemId == itemId);
+
+            product = new ItemMatter(itemMatterId, item, quantity);
+        }
+
+        return product;
+    }
+
+	/// <summary>
+	/// 人間がアイテムを拾得した際に呼び出されます。
+	/// </summary>
+	/// <param name="sender">送信元</param>
+	/// <param name="e">イベント引数</param>
+	/// <exception cref="InvalidOperationException">人間が指定されていません。</exception>
+	private void Human_ItemPickedUp(object? sender, ItemPickedUpEventArgs e)
+	{
+		Human human = sender as Human ?? throw new InvalidOperationException("人間が指定されていません。");
+
+		ItemMatter itemMatter = CreateItemMatter(e.ItemId, e.Quantity);
+
+		human.Inventory.AddItemMatter(itemMatter);
+	}
+
+	/// <summary>
+	/// 指定されたオブジェクトが現在のオブジェクトと等しいかどうかを判断します。
+	/// </summary>
+	/// <param name="obj">現在のオブジェクトと比較するオブジェクト。</param>
+	/// <returns>指定したオブジェクトが現在のオブジェクトと等しい場合は <c>true</c>。それ以外の場合は <c>false</c>。</returns>
+	public override bool Equals(object? obj)
     {
         bool result = obj switch
         {
@@ -107,7 +167,7 @@ public class Area(AreaId areaId, AreaName areaName, IReadOnlyCollection<Item> it
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(Area)} {{ {nameof(AreaId)} = {AreaId}, {nameof(AreaName)} = {AreaName}, {nameof(Items)} = {Items} }}";
+        string str = $"{nameof(Area)} {{ {nameof(AreaId)} = {AreaId}, {nameof(AreaName)} = {AreaName}, {nameof(Items)} = {Items}, {nameof(Humans)} = {Humans} }}";
 
         return str;
     }

@@ -130,6 +130,20 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     }
 
     /// <summary>
+    /// アイテムを拾得します。
+    /// </summary>
+    /// <param name="itemId">アイテムID</param>
+    /// <param name="quantity">数量</param>
+    public void PickUpItem(ItemId itemId, Quantity quantity)
+    {
+		if (ItemPickedUp is null) throw new InvalidOperationException("イベントが登録されていません。");
+
+		ItemPickedUpEventArgs e = new(itemId, quantity);
+
+        ItemPickedUp(this, e);
+    }
+
+    /// <summary>
     /// 現在のオブジェクトを表す文字列を返します。
     /// </summary>
     /// <returns>現在のオブジェクトを表す文字列。</returns>
@@ -141,4 +155,13 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     }
 
     #endregion
+
+    #region Nested types
+
+    /// <summary>
+    /// アイテムを拾得すると発生します。
+    /// </summary>
+    public event EventHandler<ItemPickedUpEventArgs>? ItemPickedUp;
+
+	#endregion
 }

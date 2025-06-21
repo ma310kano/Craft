@@ -62,6 +62,24 @@ public class Inventory(string connectionString, string languageCode) : IInventor
 	}
 
 	/// <summary>
+	/// アイテム物質を追加します。
+	/// </summary>
+	/// <param name="itemMatter">アイテム物質</param>
+	public void AddItemMatter(ItemMatter itemMatter)
+	{
+		ItemMatter? foundItemMatter = _itemMatters.FirstOrDefault(x => x.Item == itemMatter.Item);
+
+		if (foundItemMatter is not null)
+		{
+			foundItemMatter.AddQuantity(itemMatter.Quantity);
+		}
+		else
+		{
+			_itemMatters.Add(itemMatter);
+		}
+	}
+
+	/// <summary>
 	/// アイテムを除去します。
 	/// </summary>
 	/// <param name="itemId">アイテムID</param>
