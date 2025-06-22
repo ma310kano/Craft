@@ -126,7 +126,14 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
             Inventory.RemoveItem(ingredient.Item.ItemId, ingredient.Quantity);
         }
 
-        Inventory.AddItem(itemRecipe.Item.ItemId, itemRecipe.Quantity);
+        ItemMatter itemMatter;
+        {
+            ItemMatterId itemMatterId = ItemMatterId.Create();
+
+            itemMatter = new ItemMatter(itemMatterId, itemRecipe.Item, itemRecipe.Quantity);
+        }
+
+        Inventory.AddItemMatter(itemMatter);
     }
 
     /// <summary>
