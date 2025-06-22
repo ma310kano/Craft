@@ -98,7 +98,7 @@ public class Inventory(string connectionString, string languageCode) : IInventor
 		}
 		else
 		{
-			throw new InvalidOperationException($"{result.Item.ItemName}の数量が不足しています。。");
+			throw new InvalidOperationException($"{result.Item.ItemName}の数量が不足しています。");
 		}
 
 		return result;
