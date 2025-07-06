@@ -47,11 +47,25 @@ Human human;
 area.AddHuman(human);
 
 // Add item recipe
-ItemRecipeId itemRecipeId = new("fiber-01");
-{
-	IItemRecipeQueryService itemRecipeQueryService = serviceProvider.GetRequiredService<IItemRecipeQueryService>();
+IItemRecipeQueryService itemRecipeQueryService = serviceProvider.GetRequiredService<IItemRecipeQueryService>();
 
-	ItemRecipe itemRecipe = itemRecipeQueryService.QuerySingle(itemRecipeId);
+ItemRecipeId recipeFiber = new("fiber-01");
+{
+	ItemRecipe itemRecipe = itemRecipeQueryService.QuerySingle(recipeFiber);
+
+	human.ItemRecipes.Add(itemRecipe);
+}
+
+ItemRecipeId recipeString = new("string-01");
+{
+	ItemRecipe itemRecipe = itemRecipeQueryService.QuerySingle(recipeString);
+
+	human.ItemRecipes.Add(itemRecipe);
+}
+
+ItemRecipeId recipeRope = new("rope-01");
+{
+	ItemRecipe itemRecipe = itemRecipeQueryService.QuerySingle(recipeRope);
 
 	human.ItemRecipes.Add(itemRecipe);
 }
@@ -59,11 +73,15 @@ ItemRecipeId itemRecipeId = new("fiber-01");
 // Add item
 {
 	ItemId itemId = new("grass");
-	Quantity quantity = new(1);
+	Quantity quantity = new(2);
 
 	human.PickUpItem(itemId, quantity);
 }
 
-human.MakeItem(itemRecipeId);
+human.MakeItem(recipeFiber);
+human.MakeItem(recipeFiber);
+human.MakeItem(recipeString);
+human.MakeItem(recipeString);
+human.MakeItem(recipeRope);
 
 Console.WriteLine(human);
