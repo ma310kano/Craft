@@ -67,7 +67,7 @@ public class ItemMatter(ItemMatterId itemMatterId, Item item, Quantity quantity)
     /// <param name="quantity">数量</param>
     public void AddQuantity(Quantity quantity)
     {
-        Quantity -= quantity;
+        Quantity += quantity;
     }
 
     /// <summary>
