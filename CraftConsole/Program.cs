@@ -22,16 +22,27 @@ IServiceProvider serviceProvider;
 	serviceProvider = services.BuildServiceProvider();
 }
 
-Area area;
+Area grassland;
+Area river;
 {
 	IAreaQueryService areaQueryService = serviceProvider.GetRequiredService<IAreaQueryService>();
 
-	AreaId areaId = new("grassland");
+	// Grassland
+	{
+		AreaId areaId = new("grassland");
 
-	area = areaQueryService.QuerySingle(areaId);
+		grassland = areaQueryService.QuerySingle(areaId);
+	}
+
+	// river
+	{
+		AreaId areaId = new("river");
+
+		river = areaQueryService.QuerySingle(areaId);
+	}
 }
 
-Console.WriteLine(area);
+Console.WriteLine(grassland);
 Console.WriteLine();
 
 Human human;
@@ -44,7 +55,7 @@ Human human;
 	human = humanCreationService.CreateWithFamily(firstName, familyName);
 }
 
-area.AddHuman(human);
+grassland.AddHuman(human);
 
 // Add item recipe
 IItemRecipeQueryService itemRecipeQueryService = serviceProvider.GetRequiredService<IItemRecipeQueryService>();
@@ -70,7 +81,7 @@ ItemRecipeId recipeRope = new("rope-01");
 	human.ItemRecipes.Add(itemRecipe);
 }
 
-// Add item
+// Add item: Grass
 {
 	ItemId itemId = new("grass");
 	Quantity quantity = new(2);
@@ -83,5 +94,18 @@ human.MakeItem(recipeFiber);
 human.MakeItem(recipeString);
 human.MakeItem(recipeString);
 human.MakeItem(recipeRope);
+
+Console.WriteLine(human);
+
+grassland.RemoveHuman(human);
+river.AddHuman(human);
+
+// Add item: Stone(Medium)
+{
+	ItemId itemId = new("stone-medium");
+	Quantity quantity = new(1);
+
+	human.PickUpItem(itemId, quantity);
+}
 
 Console.WriteLine(human);

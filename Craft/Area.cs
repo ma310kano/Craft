@@ -87,6 +87,17 @@ public class Area(AreaId areaId, AreaName areaName, IReadOnlyCollection<Item> it
         _humans.Add(human);
     }
 
+    /// <summary>
+    /// 人間を除去します。
+    /// </summary>
+    /// <param name="human">人間</param>
+    public void RemoveHuman(Human human)
+    {
+        _humans.Remove(human);
+
+        human.ItemPickedUp -= Human_ItemPickedUp;
+    }
+
 	/// <summary>
 	/// アイテム物質を作成します。
 	/// </summary>
