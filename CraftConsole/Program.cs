@@ -15,6 +15,7 @@ IServiceProvider serviceProvider;
 		services.AddSingleton(configuration);
 	}
 
+	services.AddSingleton<IAreaManager, AreaManager>();
 	services.AddSingleton<IAreaQueryService, AreaQueryService>();
 	services.AddSingleton<IHumanCreationService, HumanCreationService>();
 	services.AddSingleton<IItemRecipeQueryService, ItemRecipeQueryService>();
@@ -22,28 +23,7 @@ IServiceProvider serviceProvider;
 	serviceProvider = services.BuildServiceProvider();
 }
 
-Area grassland;
-Area river;
-{
-	IAreaQueryService areaQueryService = serviceProvider.GetRequiredService<IAreaQueryService>();
-
-	// Grassland
-	{
-		AreaId areaId = new("grassland");
-
-		grassland = areaQueryService.QuerySingle(areaId);
-	}
-
-	// river
-	{
-		AreaId areaId = new("river");
-
-		river = areaQueryService.QuerySingle(areaId);
-	}
-}
-
-Console.WriteLine(grassland);
-Console.WriteLine();
+IAreaManager areaManager = serviceProvider.GetRequiredService<IAreaManager>();
 
 Human human;
 {
@@ -55,7 +35,11 @@ Human human;
 	human = humanCreationService.CreateWithFamily(firstName, familyName);
 }
 
-grassland.AddHuman(human);
+{
+	AreaId areaId = new("grassland");
+
+	areaManager.Move(human, areaId);
+}
 
 // Add item recipe
 IItemRecipeQueryService itemRecipeQueryService = serviceProvider.GetRequiredService<IItemRecipeQueryService>();
@@ -97,8 +81,11 @@ human.MakeItem(recipeRope);
 
 Console.WriteLine(human);
 
-grassland.RemoveHuman(human);
-river.AddHuman(human);
+{
+	AreaId areaId = new("river");
+
+	areaManager.Move(human, areaId);
+}
 
 // Add item: Stone(Medium)
 {

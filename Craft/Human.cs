@@ -28,6 +28,11 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     public Family Family { get; } = family;
 
     /// <summary>
+    /// エリアIDを取得します。
+    /// </summary>
+    public AreaId? AreaId { get; private set; }
+
+    /// <summary>
     /// アイテムレシピのコレクションを取得します。
     /// </summary>
     public ICollection<ItemRecipe> ItemRecipes { get; } = itemRecipes;
@@ -151,12 +156,21 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     }
 
     /// <summary>
+    /// エリアIDを設定します。
+    /// </summary>
+    /// <param name="areaId">エリアID</param>
+    internal void SetAreaId(AreaId? areaId)
+    {
+        AreaId = areaId;
+    }
+
+    /// <summary>
     /// 現在のオブジェクトを表す文字列を返します。
     /// </summary>
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family}, {nameof(ItemRecipes)} = {ItemRecipes}, {nameof(Inventory)} = {Inventory} }}";
+        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family}, {nameof(AreaId)} = {AreaId}, {nameof(ItemRecipes)} = {ItemRecipes}, {nameof(Inventory)} = {Inventory} }}";
 
         return str;
     }
