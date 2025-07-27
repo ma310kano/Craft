@@ -35,6 +35,7 @@ Human human;
 	human = humanCreationService.CreateWithFamily(firstName, familyName);
 }
 
+// Move area: Grassland
 {
 	AreaId areaId = new("grassland");
 
@@ -65,6 +66,20 @@ ItemRecipeId recipeRope = new("rope-01");
 	human.ItemRecipes.Add(itemRecipe);
 }
 
+ItemRecipeId recipeWoodenStick = new("wooden-stick-01");
+{
+	ItemRecipe itemRecipe = itemRecipeQueryService.QuerySingle(recipeWoodenStick);
+
+	human.ItemRecipes.Add(itemRecipe);
+}
+
+ItemRecipeId recipeStoneAxe = new("stone-axe-01");
+{
+	ItemRecipe itemRecipe = itemRecipeQueryService.QuerySingle(recipeStoneAxe);
+
+	human.ItemRecipes.Add(itemRecipe);
+}
+
 // Add item: Grass
 {
 	ItemId itemId = new("grass");
@@ -81,6 +96,7 @@ human.MakeItem(recipeRope);
 
 Console.WriteLine(human);
 
+// Move area: River
 {
 	AreaId areaId = new("river");
 
@@ -94,5 +110,23 @@ Console.WriteLine(human);
 
 	human.PickUpItem(itemId, quantity);
 }
+
+// Move area: Forest
+{
+	AreaId areaId = new("forest");
+
+	areaManager.Move(human, areaId);
+}
+
+// Add item: Tree branch
+{
+	ItemId itemId = new("tree-branch");
+	Quantity quantity = new(1);
+
+	human.PickUpItem(itemId, quantity);
+}
+
+human.MakeItem(recipeWoodenStick);
+human.MakeItem(recipeStoneAxe);
 
 Console.WriteLine(human);
