@@ -1,29 +1,23 @@
 ﻿namespace Craft;
 
 /// <summary>
-/// アイテム
+/// スキル
 /// </summary>
-/// <param name="itemId">アイテムID</param>
-/// <param name="itemName">アイテム名</param>
-/// <param name="skills">スキルのコレクション</param>
-public class Item(ItemId itemId, ItemName itemName, IReadOnlyDictionary<ItemSkillCategory, IReadOnlyCollection<Skill>> skills) : IEquatable<Item>
+/// <param name="skillId">スキルID</param>
+/// <param name="skillName">スキル名</param>
+public class Skill(SkillId skillId, SkillName skillName) : IEquatable<Skill>
 {
     #region Properties
 
     /// <summary>
-    /// アイテムIDを取得します。
+    /// スキルIDを取得します。
     /// </summary>
-    public ItemId ItemId { get; } = itemId;
+    public SkillId SkillId { get; } = skillId;
 
     /// <summary>
-    /// アイテム名を取得します。
+    /// スキル名を取得します。
     /// </summary>
-    public ItemName ItemName { get; } = itemName;
-
-    /// <summary>
-    /// スキルのコレクションを取得します。
-    /// </summary>
-    public IReadOnlyDictionary<ItemSkillCategory, IReadOnlyCollection<Skill>> Skills { get; } = skills;
+    public SkillName SkillName { get; } = skillName;
 
     #endregion
 
@@ -35,7 +29,7 @@ public class Item(ItemId itemId, ItemName itemName, IReadOnlyDictionary<ItemSkil
     /// <param name="lhs">左辺</param>
     /// <param name="rhs">右辺</param>
     /// <returns>オペランドが等しい場合は、 <c>true</c>。それ以外の場合は、 <c>false</c>。</returns>
-    public static bool operator ==(Item lhs, Item rhs)
+    public static bool operator ==(Skill lhs, Skill rhs)
     {
         if (lhs is null) return rhs is null;
 
@@ -50,7 +44,7 @@ public class Item(ItemId itemId, ItemName itemName, IReadOnlyDictionary<ItemSkil
     /// <param name="lhs">左辺</param>
     /// <param name="rhs">右辺</param>
     /// <returns>オペランドが等しくない場合は、 <c>true</c>。それ以外の場合は、 <c>false</c>。</returns>
-    public static bool operator !=(Item lhs, Item rhs)
+    public static bool operator !=(Skill lhs, Skill rhs)
     {
         bool result = !(lhs == rhs);
 
@@ -70,7 +64,7 @@ public class Item(ItemId itemId, ItemName itemName, IReadOnlyDictionary<ItemSkil
     {
         bool result = obj switch
         {
-            Item other => Equals(other),
+            Skill other => Equals(other),
             _ => base.Equals(obj),
         };
 
@@ -81,11 +75,11 @@ public class Item(ItemId itemId, ItemName itemName, IReadOnlyDictionary<ItemSkil
     /// </summary>
     /// <param name="other">このオブジェクトと比較するオブジェクト。</param>
     /// <returns>現在のオブジェクトが <c>other</c> パラメーターと等しい場合は <c>true</c>、それ以外の場合は <c>false</c> です。</returns>
-    public bool Equals(Item? other)
+    public bool Equals(Skill? other)
     {
         if (other is null) return false;
 
-        bool result = ItemId == other.ItemId;
+        bool result = SkillId == other.SkillId;
 
         return result;
     }
@@ -96,7 +90,7 @@ public class Item(ItemId itemId, ItemName itemName, IReadOnlyDictionary<ItemSkil
     /// <returns>現在のオブジェクトのハッシュ コード。</returns>
     public override int GetHashCode()
     {
-        int result = HashCode.Combine(ItemId);
+        int result = HashCode.Combine(SkillId);
 
         return result;
     }
@@ -107,7 +101,7 @@ public class Item(ItemId itemId, ItemName itemName, IReadOnlyDictionary<ItemSkil
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(Item)} {{ {nameof(ItemId)} = {ItemId}, {nameof(ItemName)} = {ItemName}, {nameof(Skills)} = {Skills} }}";
+        string str = $"{nameof(Skill)} {{ {nameof(SkillId)} = {SkillId}, {nameof(SkillName)} = {SkillName} }}";
 
         return str;
     }

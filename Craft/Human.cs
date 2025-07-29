@@ -6,16 +6,32 @@
 /// <param name="humanId">人間ID</param>
 /// <param name="firstName">個人名</param>
 /// <param name="family">家族</param>
+/// <param name="skills">スキルのコレクション</param>
 /// <param name="itemRecipes">アイテムレシピのコレクション</param>
+/// <param name="equipment">装備</param>
 /// <param name="inventory">インベントリー</param>
-public class Human(HumanId humanId, FirstName firstName, Family family, ICollection<ItemRecipe> itemRecipes, IInventory inventory) : IEquatable<Human>
+public class Human(HumanId humanId, FirstName firstName, Family family, List<Skill> skills, ICollection<ItemRecipe> itemRecipes, Equipment equipment, IInventory inventory) : IEquatable<Human>
 {
-    #region Properties
+    #region Fields
 
     /// <summary>
-    /// 人間IDを取得します。
+    /// スキルのコレクション
     /// </summary>
-    public HumanId HumanId { get; } = humanId;
+    private readonly List<Skill> _skills = skills;
+
+    /// <summary>
+    /// 装備
+    /// </summary>
+    private readonly Equipment _equipment = equipment;
+
+	#endregion
+
+	#region Properties
+
+	/// <summary>
+	/// 人間IDを取得します。
+	/// </summary>
+	public HumanId HumanId { get; } = humanId;
 
     /// <summary>
     /// 個人名を取得します。
@@ -33,9 +49,19 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     public AreaId? AreaId { get; private set; }
 
     /// <summary>
+    /// スキルのコレクションを取得します。
+    /// </summary>
+    public IReadOnlyCollection<Skill> Skills => _skills;
+
+    /// <summary>
     /// アイテムレシピのコレクションを取得します。
     /// </summary>
     public ICollection<ItemRecipe> ItemRecipes { get; } = itemRecipes;
+
+    /// <summary>
+    /// 装備
+    /// </summary>
+    public IReadOnlyEquipment Equipment => _equipment;
 
     /// <summary>
     /// インベントリーを取得します。
@@ -108,6 +134,29 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     }
 
     /// <summary>
+    /// アイテムを装備します。
+    /// </summary>
+    /// <param name="itemId">アイテムID</param>
+    public void EquipItem(ItemId itemId)
+    {
+        ItemMatter itemMatter;
+        {
+			Quantity quantity = new(1);
+
+			itemMatter = Inventory.RemoveItem(itemId, quantity);
+		}
+
+        _equipment.AddItemMatter(itemMatter);
+
+        {
+			// 装備は必ずスキルを内包している
+			IReadOnlyCollection<Skill> skills = itemMatter.Item.Skills[ItemSkillCategory.Equipment];
+
+            _skills.AddRange(skills);
+        }
+    }
+
+    /// <summary>
     /// 既定のハッシュ関数として機能します。
     /// </summary>
     /// <returns>現在のオブジェクトのハッシュ コード。</returns>
@@ -170,7 +219,7 @@ public class Human(HumanId humanId, FirstName firstName, Family family, ICollect
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family}, {nameof(AreaId)} = {AreaId}, {nameof(ItemRecipes)} = {ItemRecipes}, {nameof(Inventory)} = {Inventory} }}";
+        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family}, {nameof(AreaId)} = {AreaId}, {nameof(Skills)} = {Skills}, {nameof(ItemRecipes)} = {ItemRecipes}, {nameof(Equipment)} = {Equipment}, {nameof(Inventory)} = {Inventory} }}";
 
         return str;
     }

@@ -129,4 +129,19 @@ Console.WriteLine(human);
 human.MakeItem(recipeWoodenStick);
 human.MakeItem(recipeStoneAxe);
 
+// Equip item: Stone axe
+{
+	ItemId itemId = new("stone-axe");
+
+	human.EquipItem(itemId);
+}
+
+// Add item: Log
+{
+	ItemId itemId = new("log");
+	Quantity quantity = new(1);
+
+	human.PickUpItem(itemId, quantity);
+}
+
 Console.WriteLine(human);

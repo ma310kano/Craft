@@ -27,10 +27,12 @@ public class HumanCreationService : IHumanCreationService
 		Human product;
 		{
 			HumanId humanId = HumanId.Create();
+			List<Skill> skills = [];
 			List<ItemRecipe> itemRecipes = [];
+			Equipment equipment = new();
 			Inventory inventory = new();
 
-			product = new Human(humanId, firstName, family, itemRecipes, inventory);
+			product = new Human(humanId, firstName, family, skills, itemRecipes, equipment, inventory);
 		}
 
 		return product;

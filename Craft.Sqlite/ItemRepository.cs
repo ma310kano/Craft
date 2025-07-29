@@ -36,7 +36,10 @@ public class ItemRepository(IDbConnection connection, string languageCode) : IIt
 		}
 		else
 		{
-			const string sql = @"SELECT
+			ItemId resItemId;
+			ItemName resItemName;
+			{
+				const string sql = @"SELECT
 	  ite.item_id
 	, inm.item_name
 FROM
@@ -47,18 +50,77 @@ FROM
 WHERE
 	ite.item_id = :item_id";
 
-			var param = new
+				var param = new
+				{
+					item_id = itemId.Value,
+					language_code = languageCode,
+				};
+
+				ItemRecord record = connection.QuerySingle<ItemRecord>(sql, param);
+
+				resItemId = new(record.ItemId);
+				resItemName = new(record.ItemName);
+			}
+
+			Dictionary<ItemSkillCategory, List<Skill>> itemSkills = [];
 			{
-				item_id = itemId.Value,
-				language_code = languageCode,
-			};
+				const string sql = @"SELECT
+	  isk.item_skill_category
+	, isk.skill_id
+	, snm.skill_name
+FROM
+	item_skills isk
+	INNER JOIN skills ski
+		ON isk.skill_id = ski.skill_id
+	INNER JOIN skill_names snm
+		ON  ski.skill_id = snm.skill_id
+		AND snm.language_code = :language_code
+WHERE
+	isk.item_id = :item_id
+ORDER BY
+	isk.skill_id";
 
-			ItemRecord record = connection.QuerySingle<ItemRecord>(sql, param);
+				var param = new
+				{
+					item_id = itemId.Value,
+					language_code = languageCode,
+				};
 
-			ItemId resItemId = new(record.ItemId);
-			ItemName resItemName = new(record.ItemName);
+				IEnumerable<SkillRecord> records = connection.Query<SkillRecord>(sql, param);
 
-			result = new Item(resItemId, resItemName);
+				foreach (SkillRecord record in records)
+				{
+					ItemSkillCategory category = ItemSkillCategory.Find(record.ItemSkillCategory);
+
+					List<Skill> skills;
+					{
+						bool hasSkills = itemSkills.TryGetValue(category, out List<Skill>? value);
+						if (hasSkills)
+						{
+							skills = value!;
+						}
+						else
+						{
+							skills = [];
+							itemSkills.Add(category, skills);
+						}
+					}
+
+					Skill skill;
+					{
+						SkillId skillId = new(record.SkillId);
+						SkillName skillName = new(record.SkillName);
+
+						skill = new Skill(skillId, skillName);
+					}
+
+					skills.Add(skill);
+				}
+			}
+
+			IReadOnlyDictionary<ItemSkillCategory, IReadOnlyCollection<Skill>> categorySkills = itemSkills.Select(x => new KeyValuePair<ItemSkillCategory, IReadOnlyCollection<Skill>>(x.Key, x.Value)).ToDictionary();
+
+			result = new Item(resItemId, resItemName, categorySkills);
 
 			_cache.Add(result.ItemId, result);
 		}
@@ -76,6 +138,14 @@ WHERE
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="ItemName">アイテム名</param>
 	private record class ItemRecord(string ItemId, string ItemName);
+
+	/// <summary>
+	/// スキルのレコード
+	/// </summary>
+	/// <param name="ItemSkillCategory">アイテムスキルカテゴリー</param>
+	/// <param name="SkillId">スキルID</param>
+	/// <param name="SkillName">スキル名</param>
+	private record class SkillRecord(string ItemSkillCategory, string SkillId, string SkillName);
 
 	#endregion
 }

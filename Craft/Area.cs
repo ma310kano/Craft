@@ -101,15 +101,14 @@ public class Area(AreaId areaId, AreaName areaName, IReadOnlyCollection<Item> it
 	/// <summary>
 	/// アイテム物質を作成します。
 	/// </summary>
-	/// <param name="itemId">アイテムID</param>
+	/// <param name="item">アイテム</param>
 	/// <param name="quantity">数量</param>
 	/// <returns>作成したアイテム物質を返します。</returns>
-	private ItemMatter CreateItemMatter(ItemId itemId, Quantity quantity)
+	private static ItemMatter CreateItemMatter(Item item, Quantity quantity)
     {
         ItemMatter product;
         {
             ItemMatterId itemMatterId = ItemMatterId.Create();
-            Item item = Items.Single(x => x.ItemId == itemId);
 
             product = new ItemMatter(itemMatterId, item, quantity);
         }
@@ -127,7 +126,20 @@ public class Area(AreaId areaId, AreaName areaName, IReadOnlyCollection<Item> it
 	{
 		Human human = sender as Human ?? throw new InvalidOperationException("人間が指定されていません。");
 
-		ItemMatter itemMatter = CreateItemMatter(e.ItemId, e.Quantity);
+		Item item = Items.Single(x => x.ItemId == e.ItemId);
+
+        bool requiredSkills = item.Skills.TryGetValue(ItemSkillCategory.PickUp, out IReadOnlyCollection<Skill>? skills);
+        if (requiredSkills)
+        {
+            foreach (Skill skill in skills!)
+            {
+                bool haveSkill = human.Skills.Any(x => x == skill);
+
+                if (!haveSkill) throw new InvalidOperationException("拾得するスキルを所持していません。");
+            }
+        }
+
+		ItemMatter itemMatter = CreateItemMatter(item, e.Quantity);
 
 		human.Inventory.AddItemMatter(itemMatter);
 	}
