@@ -66,6 +66,13 @@ ItemRecipeId recipeRope = new("rope-01");
 	human.ItemRecipes.Add(itemRecipe);
 }
 
+ItemRecipeId recipeStoneBlade = new("stone-blade-01");
+{
+	ItemRecipe itemRecipe = itemRecipeQueryService.QuerySingle(recipeStoneBlade);
+
+	human.ItemRecipes.Add(itemRecipe);
+}
+
 ItemRecipeId recipeWoodenStick = new("wooden-stick-01");
 {
 	ItemRecipe itemRecipe = itemRecipeQueryService.QuerySingle(recipeWoodenStick);
@@ -103,13 +110,23 @@ Console.WriteLine(human);
 	areaManager.Move(human, areaId);
 }
 
-// Add item: Stone(Medium)
+// Stone(Medium)
 {
 	ItemId itemId = new("stone-medium");
-	Quantity quantity = new(1);
 
-	human.PickUpItem(itemId, quantity);
+	// Add item
+	{
+		Quantity quantity = new(2);
+
+		human.PickUpItem(itemId, quantity);
+	}
+
+	// Equip item
+	human.EquipItem(itemId);
 }
+
+// Make item: Stone blade
+human.MakeItem(recipeStoneBlade);
 
 // Move area: Forest
 {
