@@ -3,26 +3,47 @@
 /// <summary>
 /// 人間
 /// </summary>
-/// <param name="humanId">人間ID</param>
-/// <param name="firstName">個人名</param>
-/// <param name="family">家族</param>
-/// <param name="skills">スキルのコレクション</param>
-/// <param name="itemRecipes">アイテムレシピのコレクション</param>
-/// <param name="equipment">装備</param>
-/// <param name="inventory">インベントリー</param>
-public class Human(HumanId humanId, FirstName firstName, Family family, List<Skill> skills, ICollection<ItemRecipe> itemRecipes, Equipment equipment, IInventory inventory) : IEquatable<Human>
+public class Human : IEquatable<Human>
 {
     #region Fields
 
     /// <summary>
     /// スキルのコレクション
     /// </summary>
-    private readonly List<Skill> _skills = skills;
+    private readonly List<Skill> _skills;
 
     /// <summary>
     /// 装備
     /// </summary>
-    private readonly Equipment _equipment = equipment;
+    private readonly Equipment _equipment;
+
+	#endregion
+
+	#region Constructors
+
+	/// <summary>
+	/// 人間を初期化します。
+	/// </summary>
+	/// <param name="humanId">人間ID</param>
+	/// <param name="firstName">個人名</param>
+	/// <param name="family">家族</param>
+	/// <param name="skills">スキルのコレクション</param>
+	/// <param name="itemRecipes">アイテムレシピのコレクション</param>
+	/// <param name="equipment">装備</param>
+	/// <param name="inventory">インベントリー</param>
+	public Human(HumanId humanId, FirstName firstName, Family family, List<Skill> skills, ICollection<ItemRecipe> itemRecipes, Equipment equipment, IInventory inventory)
+    {
+        _skills = skills;
+        _equipment = equipment;
+
+        HumanId = humanId;
+        FirstName = firstName;
+        Family = family;
+        ItemRecipes = itemRecipes;
+        Inventory = inventory;
+
+		_equipment.ItemMatterRemoved += Equipment_ItemMatterRemoved;
+    }
 
 	#endregion
 
@@ -31,17 +52,17 @@ public class Human(HumanId humanId, FirstName firstName, Family family, List<Ski
 	/// <summary>
 	/// 人間IDを取得します。
 	/// </summary>
-	public HumanId HumanId { get; } = humanId;
+	public HumanId HumanId { get; }
 
     /// <summary>
     /// 個人名を取得します。
     /// </summary>
-    public FirstName FirstName { get; } = firstName;
+    public FirstName FirstName { get; }
 
     /// <summary>
     /// 家族を取得します。
     /// </summary>
-    public Family Family { get; } = family;
+    public Family Family { get; }
 
     /// <summary>
     /// エリアIDを取得します。
@@ -56,7 +77,7 @@ public class Human(HumanId humanId, FirstName firstName, Family family, List<Ski
     /// <summary>
     /// アイテムレシピのコレクションを取得します。
     /// </summary>
-    public ICollection<ItemRecipe> ItemRecipes { get; } = itemRecipes;
+    public ICollection<ItemRecipe> ItemRecipes { get; }
 
     /// <summary>
     /// 装備
@@ -66,7 +87,7 @@ public class Human(HumanId humanId, FirstName firstName, Family family, List<Ski
     /// <summary>
     /// インベントリーを取得します。
     /// </summary>
-    public IInventory Inventory { get; } = inventory;
+    public IInventory Inventory { get; }
 
     #endregion
 
@@ -136,8 +157,9 @@ public class Human(HumanId humanId, FirstName firstName, Family family, List<Ski
     /// <summary>
     /// アイテムを装備します。
     /// </summary>
+    /// <param name="part">部位</param>
     /// <param name="itemId">アイテムID</param>
-    public void EquipItem(ItemId itemId)
+    public void EquipItem(EquipmentParts part, ItemId itemId)
     {
         ItemMatter itemMatter;
         {
@@ -146,7 +168,7 @@ public class Human(HumanId humanId, FirstName firstName, Family family, List<Ski
 			itemMatter = Inventory.RemoveItem(itemId, quantity);
 		}
 
-        _equipment.AddItemMatter(itemMatter);
+        _equipment.AddItemMatter(part, itemMatter);
 
         {
 			// 装備は必ずスキルを内包している
@@ -154,13 +176,23 @@ public class Human(HumanId humanId, FirstName firstName, Family family, List<Ski
 
             _skills.AddRange(skills);
         }
-    }
+	}
 
-    /// <summary>
-    /// 既定のハッシュ関数として機能します。
-    /// </summary>
-    /// <returns>現在のオブジェクトのハッシュ コード。</returns>
-    public override int GetHashCode()
+	/// <summary>
+	/// 装備がアイテム物質を除去した際に呼び出されます。
+	/// </summary>
+	/// <param name="sender">送信元</param>
+	/// <param name="e">イベント引数</param>
+	private void Equipment_ItemMatterRemoved(object? sender, ItemMatterRemovedEventArgs e)
+	{
+        Inventory.AddItemMatter(e.ItemMatter);
+	}
+
+	/// <summary>
+	/// 既定のハッシュ関数として機能します。
+	/// </summary>
+	/// <returns>現在のオブジェクトのハッシュ コード。</returns>
+	public override int GetHashCode()
     {
         int result = HashCode.Combine(HumanId);
 

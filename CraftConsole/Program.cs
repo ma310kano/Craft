@@ -122,7 +122,7 @@ Console.WriteLine(human);
 	}
 
 	// Equip item
-	human.EquipItem(itemId);
+	human.EquipItem(EquipmentParts.RightHand, itemId);
 }
 
 // Make item: Stone blade
@@ -150,7 +150,7 @@ human.MakeItem(recipeStoneAxe);
 {
 	ItemId itemId = new("stone-axe");
 
-	human.EquipItem(itemId);
+	human.EquipItem(EquipmentParts.RightHand, itemId);
 }
 
 // Add item: Log
