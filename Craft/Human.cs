@@ -207,6 +207,13 @@ public class Human : IEquatable<Human>
     {
         ItemRecipe itemRecipe = ItemRecipes.Single(x => x.ItemRecipeId == itemRecipeId);
 
+        foreach (Skill skill in itemRecipe.Skills)
+        {
+            bool haveSkill = Skills.Any(x => x.SkillId == skill.SkillId);
+
+			if (!haveSkill) throw new InvalidOperationException("アイテムを作成するスキルを所持していません。");
+        }
+
         foreach (RecipeIngredient ingredient in itemRecipe.Ingredients)
         {
             Inventory.RemoveItem(ingredient.Item.ItemId, ingredient.Quantity);

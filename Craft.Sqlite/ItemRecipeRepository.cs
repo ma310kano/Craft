@@ -17,6 +17,11 @@ public class ItemRecipeRepository(IDbConnection connection, string languageCode)
 	/// </summary>
 	private readonly ItemRepository _itemRepository = new(connection, languageCode);
 
+	/// <summary>
+	/// スキルのリポジトリー
+	/// </summary>
+	private readonly SkillRepository _skillRepository = new(connection, languageCode);
+
 	#endregion
 
 	#region Methods
@@ -45,6 +50,25 @@ WHERE
 			};
 
 			recipe = connection.QuerySingle<RecipeRecord>(sql, param);
+		}
+
+		List<SkillRecord> skills;
+		{
+			const string sql = @"SELECT
+	irs.skill_id
+FROM
+	item_recipe_skills irs
+	INNER JOIN skills ski
+		ON irs.skill_id = ski.skill_id
+WHERE
+	irs.item_recipe_id = :item_recipe_id";
+
+			var param = new
+			{
+				item_recipe_id = itemRecipeId.Value,
+			};
+
+			skills = [.. connection.Query<SkillRecord>(sql, param)];
 		}
 
 		List<IngredientRecord> ingredients;
@@ -76,6 +100,19 @@ WHERE
 				resItem = _itemRepository.Find(cdItemId);
 			}
 
+			List<Skill> resSkills = [];
+			foreach (SkillRecord source in skills)
+			{
+				Skill resSkill;
+				{
+					SkillId resSkillId = new(source.SkillId);
+
+					resSkill = _skillRepository.Find(resSkillId);
+				}
+
+				resSkills.Add(resSkill);
+			}
+
 			Quantity resQuantity = new((int)recipe.Quantity);
 
 			List<RecipeIngredient> resIngredients = [];
@@ -98,7 +135,7 @@ WHERE
 				resIngredients.Add(ingredient);
 			}
 
-			result = new(resItemRecipeId, resItem, resQuantity, resIngredients);
+			result = new(resItemRecipeId, resSkills, resItem, resQuantity, resIngredients);
 		}
 
 		return result;
@@ -115,6 +152,12 @@ WHERE
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="Quantity">数量</param>
 	private record class RecipeRecord(string ItemRecipeId, string ItemId, long Quantity);
+
+	/// <summary>
+	/// スキルのレコード
+	/// </summary>
+	/// <param name="SkillId">スキルID</param>
+	private record class SkillRecord(string SkillId);
 
 	/// <summary>
 	/// 素材のレコード
