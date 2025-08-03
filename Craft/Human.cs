@@ -186,6 +186,15 @@ public class Human : IEquatable<Human>
 	private void Equipment_ItemMatterRemoved(object? sender, ItemMatterRemovedEventArgs e)
 	{
         Inventory.AddItemMatter(e.ItemMatter);
+
+        bool exists = e.ItemMatter.Item.Skills.TryGetValue(ItemSkillCategory.Equipment, out IReadOnlyCollection<Skill>? skills);
+        if (exists)
+        {
+            foreach (Skill skill in skills!)
+            {
+                _skills.Remove(skill);
+            }
+        }
 	}
 
 	/// <summary>
