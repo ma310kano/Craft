@@ -17,6 +17,11 @@ public class ItemRepository(IDbConnection connection, string languageCode) : IIt
 	/// </summary>
 	private static readonly Dictionary<ItemId, Item> _cache = [];
 
+	/// <summary>
+	/// スキルのリポジトリー
+	/// </summary>
+	private readonly SkillRepository _skillRepository = new(connection, languageCode);
+
 	#endregion
 
 	#region Methods
@@ -67,14 +72,10 @@ WHERE
 				const string sql = @"SELECT
 	  isk.item_skill_category
 	, isk.skill_id
-	, snm.skill_name
 FROM
 	item_skills isk
 	INNER JOIN skills ski
 		ON isk.skill_id = ski.skill_id
-	INNER JOIN skill_names snm
-		ON  ski.skill_id = snm.skill_id
-		AND snm.language_code = :language_code
 WHERE
 	isk.item_id = :item_id
 ORDER BY
@@ -109,9 +110,8 @@ ORDER BY
 					Skill skill;
 					{
 						SkillId skillId = new(record.SkillId);
-						SkillName skillName = new(record.SkillName);
 
-						skill = new Skill(skillId, skillName);
+						skill = _skillRepository.Find(skillId);
 					}
 
 					skills.Add(skill);
@@ -144,8 +144,7 @@ ORDER BY
 	/// </summary>
 	/// <param name="ItemSkillCategory">アイテムスキルカテゴリー</param>
 	/// <param name="SkillId">スキルID</param>
-	/// <param name="SkillName">スキル名</param>
-	private record class SkillRecord(string ItemSkillCategory, string SkillId, string SkillName);
+	private record class SkillRecord(string ItemSkillCategory, string SkillId);
 
 	#endregion
 }
