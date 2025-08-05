@@ -67,60 +67,71 @@ WHERE
 				resItemName = new(record.ItemName);
 			}
 
-			Dictionary<ItemSkillCategory, List<Skill>> itemSkills = [];
+			List<Skill> skillsActivatedByEquipping = [];
 			{
 				const string sql = @"SELECT
-	  isk.item_skill_category
-	, isk.skill_id
+	skill_id
 FROM
-	item_skills isk
-	INNER JOIN skills ski
-		ON isk.skill_id = ski.skill_id
+	item_skills_activated_by_equipping
 WHERE
-	isk.item_id = :item_id
+	item_id = :item_id
 ORDER BY
-	isk.skill_id";
+	  item_id
+	, skill_id";
 
 				var param = new
 				{
 					item_id = itemId.Value,
-					language_code = languageCode,
 				};
 
-				IEnumerable<SkillRecord> records = connection.Query<SkillRecord>(sql, param);
+				IEnumerable<string> sources = connection.Query<string>(sql, param);
 
-				foreach (SkillRecord record in records)
+				foreach (string source in sources)
 				{
-					ItemSkillCategory category = ItemSkillCategory.Find(record.ItemSkillCategory);
-
-					List<Skill> skills;
-					{
-						bool hasSkills = itemSkills.TryGetValue(category, out List<Skill>? value);
-						if (hasSkills)
-						{
-							skills = value!;
-						}
-						else
-						{
-							skills = [];
-							itemSkills.Add(category, skills);
-						}
-					}
-
 					Skill skill;
 					{
-						SkillId skillId = new(record.SkillId);
+						SkillId skillId = new(source);
 
 						skill = _skillRepository.Find(skillId);
 					}
 
-					skills.Add(skill);
+					skillsActivatedByEquipping.Add(skill);
 				}
 			}
 
-			IReadOnlyDictionary<ItemSkillCategory, IReadOnlyCollection<Skill>> categorySkills = itemSkills.Select(x => new KeyValuePair<ItemSkillCategory, IReadOnlyCollection<Skill>>(x.Key, x.Value)).ToDictionary();
+			List<Skill> skillsNeededToPickup = [];
+			{
+				const string sql = @"SELECT
+	skill_id
+FROM
+	item_skills_needed_to_pickup
+WHERE
+	item_id = :item_id
+ORDER BY
+	  item_id
+	, skill_id";
 
-			result = new Item(resItemId, resItemName, categorySkills);
+				var param = new
+				{
+					item_id = itemId.Value,
+				};
+
+				IEnumerable<string> sources = connection.Query<string>(sql, param);
+
+				foreach (string source in sources)
+				{
+					Skill skill;
+					{
+						SkillId skillId = new(source);
+
+						skill = _skillRepository.Find(skillId);
+					}
+
+					skillsNeededToPickup.Add(skill);
+				}
+			}
+
+			result = new Item(resItemId, resItemName, skillsActivatedByEquipping, skillsNeededToPickup);
 
 			_cache.Add(result.ItemId, result);
 		}
@@ -138,13 +149,6 @@ ORDER BY
 	/// <param name="ItemId">アイテムID</param>
 	/// <param name="ItemName">アイテム名</param>
 	private record class ItemRecord(string ItemId, string ItemName);
-
-	/// <summary>
-	/// スキルのレコード
-	/// </summary>
-	/// <param name="ItemSkillCategory">アイテムスキルカテゴリー</param>
-	/// <param name="SkillId">スキルID</param>
-	private record class SkillRecord(string ItemSkillCategory, string SkillId);
 
 	#endregion
 }

@@ -5,8 +5,9 @@
 /// </summary>
 /// <param name="itemId">アイテムID</param>
 /// <param name="itemName">アイテム名</param>
-/// <param name="skills">スキルのコレクション</param>
-public class Item(ItemId itemId, ItemName itemName, IReadOnlyDictionary<ItemSkillCategory, IReadOnlyCollection<Skill>> skills) : IEquatable<Item>
+/// <param name="skillsActivatedByEquipping">装備によって発動するスキルのコレクション</param>
+/// <param name="skillsNeededToPickup">採集に必要なスキルのコレクション</param>
+public class Item(ItemId itemId, ItemName itemName, IReadOnlyCollection<Skill> skillsActivatedByEquipping, IReadOnlyCollection<Skill> skillsNeededToPickup) : IEquatable<Item>
 {
     #region Properties
 
@@ -21,9 +22,14 @@ public class Item(ItemId itemId, ItemName itemName, IReadOnlyDictionary<ItemSkil
     public ItemName ItemName { get; } = itemName;
 
     /// <summary>
-    /// スキルのコレクションを取得します。
+    /// 装備によって発動するスキルのコレクションを取得します。
     /// </summary>
-    public IReadOnlyDictionary<ItemSkillCategory, IReadOnlyCollection<Skill>> Skills { get; } = skills;
+    public IReadOnlyCollection<Skill> SkillsActivatedByEquipping { get; } = skillsActivatedByEquipping;
+
+    /// <summary>
+    /// 採集に必要なスキルのコレクションを取得します。
+    /// </summary>
+    public IReadOnlyCollection<Skill> SkillsNeededToPickup { get; } = skillsNeededToPickup;
 
     #endregion
 
@@ -107,7 +113,7 @@ public class Item(ItemId itemId, ItemName itemName, IReadOnlyDictionary<ItemSkil
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(Item)} {{ {nameof(ItemId)} = {ItemId}, {nameof(ItemName)} = {ItemName}, {nameof(Skills)} = {Skills} }}";
+        string str = $"{nameof(Item)} {{ {nameof(ItemId)} = {ItemId}, {nameof(ItemName)} = {ItemName}, {nameof(SkillsActivatedByEquipping)} = {SkillsActivatedByEquipping}, {nameof(SkillsNeededToPickup)} = {SkillsNeededToPickup} }}";
 
         return str;
     }

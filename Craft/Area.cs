@@ -128,15 +128,14 @@ public class Area(AreaId areaId, AreaName areaName, IReadOnlyCollection<Item> it
 
 		Item item = Items.Single(x => x.ItemId == e.ItemId);
 
-        bool requiredSkills = item.Skills.TryGetValue(ItemSkillCategory.PickUp, out IReadOnlyCollection<Skill>? skills);
-        if (requiredSkills)
+        if (item.SkillsNeededToPickup.Count > 0)
         {
 			bool haveEquipment = human.Equipment.TryGetItemMatter(EquipmentParts.RightHand, out ItemMatter? equipment);
             if (!haveEquipment) throw new InvalidOperationException("右手に装備していません。");
 
-			foreach (Skill skill in skills!)
+			foreach (Skill neededSkill in item.SkillsNeededToPickup)
             {
-                bool haveSkill = equipment!.Item.Skills[ItemSkillCategory.Equipment].Any(x => x == skill);
+                bool haveSkill = equipment!.Item.SkillsActivatedByEquipping.Any(skill => skill == neededSkill);
                 if (!haveSkill) throw new InvalidOperationException("アイテムの拾得に必要なスキルがありません。");
             }
         }

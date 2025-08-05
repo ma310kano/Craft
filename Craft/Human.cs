@@ -188,14 +188,14 @@ public class Human : IEquatable<Human>
     {
         ItemRecipe itemRecipe = ItemRecipes.Single(x => x.ItemRecipeId == itemRecipeId);
 
-        if (itemRecipe.Skills.Count > 0)
+        if (itemRecipe.NeededSkills.Count > 0)
         {
-            bool haveEquipment = _equipment.TryGetItemMatter(EquipmentParts.RightHand, out ItemMatter? equipment);
+            bool haveEquipment = _equipment.TryGetItemMatter(EquipmentParts.RightHand, out ItemMatter? equipmentItemMatter);
             if (!haveEquipment) throw new InvalidOperationException("右手に装備していません。");
 
-            foreach (Skill skill in itemRecipe.Skills)
+            foreach (Skill neededSkill in itemRecipe.NeededSkills)
             {
-                bool haveSkill = equipment!.Item.Skills[ItemSkillCategory.Equipment].Any(x => x == skill);
+                bool haveSkill = equipmentItemMatter!.Item.SkillsActivatedByEquipping.Any(skill => skill == neededSkill);
                 if (!haveSkill) throw new InvalidOperationException("アイテムの作成に必要なスキルがありません。");
             }
         }
