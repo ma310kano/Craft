@@ -8,11 +8,6 @@ public class Human : IEquatable<Human>
     #region Fields
 
     /// <summary>
-    /// スキルのコレクション
-    /// </summary>
-    private readonly List<Skill> _skills;
-
-    /// <summary>
     /// 装備
     /// </summary>
     private readonly Equipment _equipment;
@@ -27,13 +22,11 @@ public class Human : IEquatable<Human>
 	/// <param name="humanId">人間ID</param>
 	/// <param name="firstName">個人名</param>
 	/// <param name="family">家族</param>
-	/// <param name="skills">スキルのコレクション</param>
 	/// <param name="itemRecipes">アイテムレシピのコレクション</param>
 	/// <param name="equipment">装備</param>
 	/// <param name="inventory">インベントリー</param>
-	public Human(HumanId humanId, FirstName firstName, Family family, List<Skill> skills, ICollection<ItemRecipe> itemRecipes, Equipment equipment, IInventory inventory)
+	public Human(HumanId humanId, FirstName firstName, Family family, ICollection<ItemRecipe> itemRecipes, Equipment equipment, IInventory inventory)
     {
-        _skills = skills;
         _equipment = equipment;
 
         HumanId = humanId;
@@ -68,11 +61,6 @@ public class Human : IEquatable<Human>
     /// エリアIDを取得します。
     /// </summary>
     public AreaId? AreaId { get; private set; }
-
-    /// <summary>
-    /// スキルのコレクションを取得します。
-    /// </summary>
-    public IReadOnlyCollection<Skill> Skills => _skills;
 
     /// <summary>
     /// アイテムレシピのコレクションを取得します。
@@ -169,13 +157,6 @@ public class Human : IEquatable<Human>
 		}
 
         _equipment.AddItemMatter(part, itemMatter);
-
-        {
-			// 装備は必ずスキルを内包している
-			IReadOnlyCollection<Skill> skills = itemMatter.Item.Skills[ItemSkillCategory.Equipment];
-
-            _skills.AddRange(skills);
-        }
 	}
 
 	/// <summary>
@@ -186,15 +167,6 @@ public class Human : IEquatable<Human>
 	private void Equipment_ItemMatterRemoved(object? sender, ItemMatterRemovedEventArgs e)
 	{
         Inventory.AddItemMatter(e.ItemMatter);
-
-        bool exists = e.ItemMatter.Item.Skills.TryGetValue(ItemSkillCategory.Equipment, out IReadOnlyCollection<Skill>? skills);
-        if (exists)
-        {
-            foreach (Skill skill in skills!)
-            {
-                _skills.Remove(skill);
-            }
-        }
 	}
 
 	/// <summary>
@@ -216,11 +188,16 @@ public class Human : IEquatable<Human>
     {
         ItemRecipe itemRecipe = ItemRecipes.Single(x => x.ItemRecipeId == itemRecipeId);
 
-        foreach (Skill skill in itemRecipe.Skills)
+        if (itemRecipe.Skills.Count > 0)
         {
-            bool haveSkill = Skills.Any(x => x.SkillId == skill.SkillId);
+            bool haveEquipment = _equipment.TryGetItemMatter(EquipmentParts.RightHand, out ItemMatter? equipment);
+            if (!haveEquipment) throw new InvalidOperationException("右手に装備していません。");
 
-			if (!haveSkill) throw new InvalidOperationException("アイテムを作成するスキルを所持していません。");
+            foreach (Skill skill in itemRecipe.Skills)
+            {
+                bool haveSkill = equipment!.Item.Skills[ItemSkillCategory.Equipment].Any(x => x == skill);
+                if (!haveSkill) throw new InvalidOperationException("アイテムの作成に必要なスキルがありません。");
+            }
         }
 
         foreach (RecipeIngredient ingredient in itemRecipe.Ingredients)
@@ -267,7 +244,7 @@ public class Human : IEquatable<Human>
     /// <returns>現在のオブジェクトを表す文字列。</returns>
     public override string ToString()
     {
-        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family}, {nameof(AreaId)} = {AreaId}, {nameof(Skills)} = {Skills}, {nameof(ItemRecipes)} = {ItemRecipes}, {nameof(Equipment)} = {Equipment}, {nameof(Inventory)} = {Inventory} }}";
+        string str = $"{nameof(Human)} {{ {nameof(HumanId)} = {HumanId}, {nameof(FirstName)} = {FirstName}, {nameof(Family)} = {Family}, {nameof(AreaId)} = {AreaId}, {nameof(ItemRecipes)} = {ItemRecipes}, {nameof(Equipment)} = {Equipment}, {nameof(Inventory)} = {Inventory} }}";
 
         return str;
     }

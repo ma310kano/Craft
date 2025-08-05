@@ -131,11 +131,13 @@ public class Area(AreaId areaId, AreaName areaName, IReadOnlyCollection<Item> it
         bool requiredSkills = item.Skills.TryGetValue(ItemSkillCategory.PickUp, out IReadOnlyCollection<Skill>? skills);
         if (requiredSkills)
         {
-            foreach (Skill skill in skills!)
-            {
-                bool haveSkill = human.Skills.Any(x => x == skill);
+			bool haveEquipment = human.Equipment.TryGetItemMatter(EquipmentParts.RightHand, out ItemMatter? equipment);
+            if (!haveEquipment) throw new InvalidOperationException("右手に装備していません。");
 
-                if (!haveSkill) throw new InvalidOperationException("拾得するスキルを所持していません。");
+			foreach (Skill skill in skills!)
+            {
+                bool haveSkill = equipment!.Item.Skills[ItemSkillCategory.Equipment].Any(x => x == skill);
+                if (!haveSkill) throw new InvalidOperationException("アイテムの拾得に必要なスキルがありません。");
             }
         }
 
